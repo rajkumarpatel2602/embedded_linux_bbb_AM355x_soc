@@ -11,7 +11,7 @@
 
 ## How to boot BBB
 - Insert SD card in BBB
-- Connect board to host sytem using serial debug wires // USB to UART converter for debug log or via Mini USB cabel (P4 connector)
+- Connect board to host sytem using serial debug wires. USB to UART converter for debug log or via Mini USB cabel (P4 connector)
 - Open minicom in terminal, give power to board (it tries to boot from emmc), put board in power-down mode by longpress s3(all LEDs off), press and hold boot button s2(for SD card boot), gently press and release power button s3, and release boot button s2.
 
 ## U-boot
