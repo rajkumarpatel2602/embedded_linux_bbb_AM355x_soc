@@ -38,6 +38,18 @@
 - this function has imaege structure, this structure holds the entry point of kernel image in DDR memory, right after header
 - image struct has other members initialized and points to device tree blob/binary in DDR. ft_addr or fdt_addr or flatten_tree_binary_address to describe peripheral on the board
 - at last call the kernel entry point. first args is zero, second is machine_id identified by uboot passed by r1, and third arg is device tree binary address /* kernel_entry(0, machid, r2) */
+- this kernel_entry() is in head.S unders 'start' routine
+- Come to linux codebase - /linux/arch/arm/boot/compressed/head.S /* all bootstarp loader files are under compressed */
+- start: /* check the assembly code */
+- r1, r2 are loaded and saved on cpu register in this start function, and thne, it calls misc.c where entry point is decompress_kernel
+- vi misc.c and search for decompress_kernel() and we will see logs "uncompressing linux... done! booting the kernel!" which we get on boot prompt.
+- now controll goes back to head.S to head.S in linux kernel. /* from bootstrap loader to linux kernel switching is happening here */
+- vi arch/arm/kernel/head.S /* call for generic arc platform startup code, board independent, so all board init steps are there; r2 arg will tell what to init here. __lookup_processor_type call will search for processor arch present on board, and after knowing processor type, processor specific init routines from processor specific files in path arc/arm/mm/proc-*.S (https://www.udemy.com/course/embedded-linux-step-by-step-using-beaglebone/learn/lecture/7834076#overview) . processor specific init(arm cortxA8 cpu) happens first and also page table init, pointers, and then mmu is turned on happens with Virtual address support (VAS) before the hand-off to kernel (arch independent) code happens by calling start_kernel() from head-common.S. responsible for arm cpu init, validate processor arch, page table init, MMU,  virtual memory init, start_kernel() (Which is arch independent and present in init/main.c) . All arch specific code gets called in this step */
+- uncompression and relocation of linux kerenl image is not responsibility of uboot, but of bootstrap loader which is glued to kernel image.
+- both head.S are arch dependent.
+- main.c is responsible for various linux specific (arch independent) initalization of subsystems of linux kernel before mouning rootfs, and launching very first linux application.
+- here at last rest_init() call happens, which creates two kthreads, first is kernel_init() and second is kthreadd, starts the scheduler and kernel goes to cpu Idle loop.
+- kernel_init thread is used to first linux app, init() (first /sbin/init, if fails this /etc/init, else /bin/init, else /bin/sh) and hence has pid1. kthereadd is used to spawn more kernel threads.
 - head.S -> misc.C // uncompress, compressed image
-- head.S -> kernel's head.s -> head-common.c -> main.c
-- main.c-> init // user application
+- head.S -> kernel's head.s -> head-common.c -> [arch dependent things are done, mmu init done and now, go to arch independent call from this file] -> start_kernel() present in init/main.c (linux kerne arch independent generic file)
+- main.c-> init() is used to launch other user app // user application
