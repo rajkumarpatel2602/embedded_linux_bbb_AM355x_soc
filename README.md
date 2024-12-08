@@ -28,11 +28,11 @@
 - uboot# imi DDR_Loading_ADDr /* header info for application image */
 - many other uboot commands are also present.
 
-##uimage (ELF extension)
+## uimage (ELF extension)
 - uimage is uboot friendly image, cuz it contains uboot image header (64B) on top of zimage.
 - before loading kernel, uimage header info gets printed.
 
-##hand-off from uboot to kernel
+## Hand-off from uboot to kernel
 - uboot handsoff control to head.S in linux bootstrap loader.
 - u-boot-2017.05-rc2/arch/arm/lib/bootm.c /* code which picks up linux kernel from memory, and handsoff control to kernel -- boot_jump_linux(*image, flag) */
 - this function has imaege structure, this structure holds the entry point of kernel image in DDR memory, right after header
