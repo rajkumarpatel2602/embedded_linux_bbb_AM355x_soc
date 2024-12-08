@@ -57,7 +57,8 @@
 ## Device Tree (Falttened Device Tree)
 - Earlier device-config.c was used to pass platform device (which are not self-discoverable like usb, pcie to operating system) data to kernel.
 - Whenever kerenel gets compiled, it has an entry of these platform devices, and whenever user insmode device_name.ko, Linux checks the existing devices in the table, and maps the driver to this device, and then probe function of that .ko is called.
-- Now, whenever one wants to add a peripheral or change the board, one has to compile the kernel with new device-config.c file, and it was a headache.
+- Now, whenever one wants to add a peripheral or change the board, one has to compile the kernel with new device-config.c or board-file, and it was a headache.
+- device-config.c was used to handling pinmuxing, to initialize platform devices, and to add all non self discoverable device list.
 - Arm came up with an idea of device tree files, where each board has its own device tree, and vendors are supposed to supply this, and it gets compiled independently by dtc, and output is device tree blob or binary, or dtb file.
 - whenever kernel boots up, it checks for dtb at predefined location, and based on that, it does initialization of devices.
 - Now, if developer wants to change the board, she/he has to just get the dtb for that board, and do the placement at correct location in Ram, and on bootup, linux will find the dtb for that board, and without any issue, os will be able to initialize the platform devices. This is how, device tree helps.
